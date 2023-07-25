@@ -113,7 +113,7 @@ def test_mismatch_calculator(
 
     # Output type test
     assert isinstance(
-        simulator.mismatch_calculator(experience, expected_experience), int
+        simulator.mismatch_calculator(experience, expected_experience), float
     )
 
     # out-of-range experience test
