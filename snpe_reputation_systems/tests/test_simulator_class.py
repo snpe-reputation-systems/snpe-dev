@@ -97,9 +97,13 @@ def yield_SingleRhoSimulator():
 @settings(max_examples=20)
 @given(
     experience=st.integers(min_value=1, max_value=5),
-    expected_experience=st.integers(min_value=1, max_value=5),
+    expected_experience=st.floats(min_value=1, max_value=5),
+    wrong_experience=st.integers(min_value=6, max_value=10),
+    wrong_expected_experience=st.floats(min_value=6, max_value=10),
 )
-def test_mismatch_calculator(experience, expected_experience):
+def test_mismatch_calculator(
+    experience, expected_experience, wrong_experience, wrong_expected_experience
+):
     simulator = yield_SingleRhoSimulator()
 
     # Test of correct substraction
@@ -112,9 +116,13 @@ def test_mismatch_calculator(experience, expected_experience):
         simulator.mismatch_calculator(experience, expected_experience), int
     )
 
-    # Null input test
-    with pytest.raises(AssertionError):
-        simulator.mismatch_calculator(None, None)
+    # out-of-range experience test
+    with pytest.raises(ValueError):
+        simulator.mismatch_calculator(wrong_experience, expected_experience)
+
+    # out-of-range expected experience test
+    with pytest.raises(ValueError):
+        simulator.mismatch_calculator(experience, wrong_expected_experience)
 
 
 @settings(max_examples=20)

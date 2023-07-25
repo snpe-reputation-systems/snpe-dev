@@ -233,15 +233,19 @@ class SingleRhoSimulator(BaseSimulator):
     def mismatch_calculator(
         self, experience: float, expected_experience: float
     ) -> float:
-        assert experience in np.arange(
-            1, 6, 1
-        ), f"User's experience should be a whole number in [1, 5], got {experience} instead"
-        assert (
-            expected_experience >= 1.0 and expected_experience <= 5.0
-        ), f"""
-        Mean of user's expected distribution of experiences is a float in [1, 5],
-        got {expected_experience} instead
-        """
+        if experience not in np.arange(1, 6, 1):
+            raise ValueError(
+                f"User's experience should be a whole number in [1, 5], got {experience} instead"
+            )
+
+        if expected_experience <= 1.0 and expected_experience >= 5.0:
+            raise ValueError(
+                f"""
+                Mean of user's expected distribution of experiences should be a float in [1, 5],
+                got {expected_experience} instead
+                """
+            )
+
         return experience - expected_experience
 
     def rating_calculator(self, delta: float, simulation_id: int) -> int:
