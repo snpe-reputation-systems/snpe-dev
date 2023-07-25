@@ -8,7 +8,11 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from ..snpe_reputation_systems.simulations.simulator_class import (
-    BaseSimulator, DoubleRhoSimulator, HerdingSimulator, SingleRhoSimulator)
+    BaseSimulator,
+    DoubleRhoSimulator,
+    HerdingSimulator,
+    SingleRhoSimulator,
+)
 
 # class TestBaseSimulator
 #############################################
