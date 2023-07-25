@@ -2,13 +2,11 @@ from typing import Deque, List, Optional, Union
 
 import hypothesis
 from hypothesis import given, settings
-from hypothesis.extra.numpy import arrays
 from hypothesis import strategies as st
-
-
-import numpy as np
+from hypothesis.extra.numpy import arrays
 from numpy import float
 
+import numpy as np
 
 import pandas as pd
 import pytest
