@@ -39,7 +39,7 @@ class BaseSimulator:
         if self.review_prior.shape != simulated_reviews.shape:
             raise Exception(
                 "Prior and simulated distributions of reviews should have the same shape"
-                )
+            )
 
         return self.review_prior + simulated_reviews
 
