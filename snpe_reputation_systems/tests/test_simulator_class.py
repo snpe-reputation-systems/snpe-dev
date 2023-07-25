@@ -1,15 +1,13 @@
 from typing import Deque, List, Optional, Union
 
 import hypothesis
+import numpy as np
+import pandas as pd
+import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 from numpy import float
-
-import numpy as np
-
-import pandas as pd
-import pytest
 
 
 from ..snpe_reputation_systems.simulations.simulator_class import (
