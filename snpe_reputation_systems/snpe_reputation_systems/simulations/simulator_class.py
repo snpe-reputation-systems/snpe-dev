@@ -37,7 +37,7 @@ class BaseSimulator:
         self, simulated_reviews: np.ndarray
     ) -> np.ndarray:
         if self.review_prior.shape != simulated_reviews.shape:
-            raise Exception(
+            raise ValueError(
                 "Prior and simulated distributions of reviews should have the same shape"
             )
 

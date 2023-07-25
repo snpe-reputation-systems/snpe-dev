@@ -1,49 +1,64 @@
 from typing import Deque, List, Optional, Union
 
 import hypothesis
-import numpy as np
-import pandas as pd
-import pytest
 from hypothesis import given, settings
+from hypothesis.extra.numpy import arrays
 from hypothesis import strategies as st
 
+
+import numpy as np
+from numpy import float
+
+
+import pandas as pd
+import pytest
+
+
 from ..snpe_reputation_systems.simulations.simulator_class import (
-    BaseSimulator, DoubleRhoSimulator, HerdingSimulator, SingleRhoSimulator)
+    BaseSimulator,
+    DoubleRhoSimulator,
+    HerdingSimulator,
+    SingleRhoSimulator,
+)
 
 # class TestBaseSimulator
 #############################################
 
 
-@pytest.fixture
-def yield_BaseSimulator():
+# @pytest.fixture
+# def yield_BaseSimulator():
+#    params = {
+#        "review_prior": np.ones(5),
+#        "tendency_to_rate": 0.05,
+#        "simulation_type": "timeseries",
+#    }
+#    return BaseSimulator(params)
+
+
+@given(arrays(float, 5), arrays(float, 6), st.none())
+def test_convolve_prior_with_existing_reviews(arr1, arr2, none_value):
+    # BaseSimulator instance
     params = {
         "review_prior": np.ones(5),
         "tendency_to_rate": 0.05,
         "simulation_type": "timeseries",
     }
-    return BaseSimulator(params)
+    base_simulator = BaseSimulator(params)
 
-
-def test_convolve_prior_with_existing_reviews(yield_BaseSimulator):
     # Test of correct sum
-    assert np.array_equal(
-        yield_BaseSimulator.convolve_prior_with_existing_reviews(np.ones(5)),
-        np.array([2, 2, 2, 2, 2]),
-    )
+    result = base_simulator.convolve_prior_with_existing_reviews(arr1)
+    assert np.array_equal(result, np.ones(5) + arr1)
 
     # Input shape test
-    with pytest.raises(Exception):
-        yield_BaseSimulator.convolve_prior_with_existing_reviews(
-            np.array([1, 2, 3, 4, 5, 6])
-        )
+    with pytest.raises(ValueError):
+        base_simulator.convolve_prior_with_existing_reviews(arr2)
 
     # Output type test
-    result = yield_BaseSimulator.convolve_prior_with_existing_reviews(np.ones(5))
     assert isinstance(result, np.ndarray)
 
     # Null input test
     with pytest.raises(AttributeError):
-        yield_BaseSimulator.convolve_prior_with_existing_reviews(None)
+        base_simulator.convolve_prior_with_existing_reviews(none_value)
 
 
 def test_simulate():
