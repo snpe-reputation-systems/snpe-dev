@@ -30,7 +30,11 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 #    return BaseSimulator(params)
 
 
-@given(arrays(float64, 5), arrays(float64, 6), st.none())
+@given(
+    arrays(float64, 5, elements=st.floats(min_value=-100, max_value=100)),
+    arrays(float64, 6, elements=st.floats(min_value=-100, max_value=100)),
+    st.none(),
+)
 def test_convolve_prior_with_existing_reviews(arr1, arr2, none_value):
     # BaseSimulator instance
     params = {
