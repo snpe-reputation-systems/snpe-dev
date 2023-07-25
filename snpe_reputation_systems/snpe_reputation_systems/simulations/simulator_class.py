@@ -238,7 +238,7 @@ class SingleRhoSimulator(BaseSimulator):
                 f"User's experience should be a whole number in [1, 5], got {experience} instead"
             )
 
-        if expected_experience <= 1.0 and expected_experience >= 5.0:
+        if expected_experience <= 1.0 or expected_experience >= 5.0:
             raise ValueError(
                 f"""
                 Mean of user's expected distribution of experiences should be a float in [1, 5],
