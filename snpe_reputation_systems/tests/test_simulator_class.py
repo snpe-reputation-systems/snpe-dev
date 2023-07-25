@@ -9,7 +9,6 @@ from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 from numpy import float
 
-
 from ..snpe_reputation_systems.simulations.simulator_class import (
     BaseSimulator,
     DoubleRhoSimulator,
