@@ -36,10 +36,10 @@ class BaseSimulator:
     def convolve_prior_with_existing_reviews(
         self, simulated_reviews: np.ndarray
     ) -> np.ndarray:
-        if (
-            self.review_prior.shape != simulated_reviews.shape
-        ):
-            raise Exception("Prior and simulated distributions of reviews should have the same shape")
+        if self.review_prior.shape != simulated_reviews.shape:
+            raise Exception(
+                "Prior and simulated distributions of reviews should have the same shape"
+                )
 
         return self.review_prior + simulated_reviews
 

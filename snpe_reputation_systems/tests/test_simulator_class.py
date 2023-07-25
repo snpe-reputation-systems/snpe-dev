@@ -3,52 +3,67 @@ import hypothesis
 from hypothesis import given, settings, strategies as st
 import numpy as np
 import pandas as pd
-from ..snpe_reputation_systems.simulations.simulator_class import BaseSimulator, SingleRhoSimulator, DoubleRhoSimulator, HerdingSimulator
+from ..snpe_reputation_systems.simulations.simulator_class import (
+    BaseSimulator, 
+    SingleRhoSimulator, 
+    DoubleRhoSimulator, 
+    HerdingSimulator
+)
 from typing import Deque, List, Optional, Union
 
 
 # class TestBaseSimulator
 #############################################
 
+
 @pytest.fixture
 def yield_BaseSimulator():
     params = {
         "review_prior": np.ones(5),
         "tendency_to_rate": 0.05,
-        "simulation_type": "timeseries"
+        "simulation_type": "timeseries",
     }
     return BaseSimulator(params)
     
+
 def test_convolve_prior_with_existing_reviews(yield_BaseSimulator):
-    
     # Test of correct sum
-    assert np.array_equal(yield_BaseSimulator.convolve_prior_with_existing_reviews(np.ones(5)), np.array([2, 2, 2, 2, 2]))
+    assert np.array_equal(
+        yield_BaseSimulator.convolve_prior_with_existing_reviews(np.ones(5)), 
+        np.array([2, 2, 2, 2, 2])
+        )
 
     # Input shape test
     with pytest.raises(Exception):
-        yield_BaseSimulator.convolve_prior_with_existing_reviews(np.array([1, 2, 3, 4, 5, 6]))
+        yield_BaseSimulator.convolve_prior_with_existing_reviews(
+            np.array([1, 2, 3, 4, 5, 6])
+            )
         
     # Output type test
     result = yield_BaseSimulator.convolve_prior_with_existing_reviews(np.ones(5))
     assert isinstance(result, np.ndarray)
 
     # Null input test
-    with pytest.raises(AttributeError): 
+    with pytest.raises(AttributeError):
         yield_BaseSimulator.convolve_prior_with_existing_reviews(None)
 
 
 def test_simulate():
     pass
 
+
 def test_yield_simulation_param_per_visitor():
     pass
+
 
 @pytest.fixture
 def generate_mock_simulation_parameters(test_base_simulator):
     pass
 
+
 def test_save_simulations():
     pass
+
 
 def test_load_simulations():
     pass
