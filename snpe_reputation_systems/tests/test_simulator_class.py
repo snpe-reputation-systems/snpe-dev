@@ -1,16 +1,14 @@
-import pytest
-import hypothesis
-from hypothesis import given, settings, strategies as st
-import numpy as np
-import pandas as pd
-from ..snpe_reputation_systems.simulations.simulator_class import (
-    BaseSimulator,
-    SingleRhoSimulator,
-    DoubleRhoSimulator,
-    HerdingSimulator,
-)
 from typing import Deque, List, Optional, Union
 
+import hypothesis
+import numpy as np
+import pandas as pd
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
+from ..snpe_reputation_systems.simulations.simulator_class import (
+    BaseSimulator, DoubleRhoSimulator, HerdingSimulator, SingleRhoSimulator)
 
 # class TestBaseSimulator
 #############################################
