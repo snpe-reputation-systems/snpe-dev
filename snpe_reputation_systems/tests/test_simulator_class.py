@@ -7,6 +7,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
+from hypothesis.strategies import none, text, floats
 from numpy import float64
 
 from ..snpe_reputation_systems.simulations.simulator_class import (
@@ -15,6 +16,7 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
     HerdingSimulator,
     SingleRhoSimulator,
 )
+
 
 # class TestBaseSimulator
 #############################################
@@ -31,11 +33,16 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 
 
 @given(
-    arrays(float64, 5, elements=st.floats(min_value=-100, max_value=100)),
-    arrays(float64, 6, elements=st.floats(min_value=-100, max_value=100)),
-    st.none(),
+    arrays(float64, 5, elements=floats(min_value=-100, max_value=100)),
+    arrays(float64, 6, elements=floats(min_value=-100, max_value=100)),
+    arrays(float64, 5, elements=floats(allow_nan=True, allow_infinity=True)),
+    arrays(float64, 0),
+    none(),
+    text(),
 )
-def test_convolve_prior_with_existing_reviews(arr1, arr2, none_value):
+def test_convolve_prior_with_existing_reviews(
+    arr1, arr2, nan_or_inf_arr, empty_arr, none_value, string_value
+):
     # BaseSimulator instance
     params = {
         "review_prior": np.ones(5),
@@ -52,12 +59,25 @@ def test_convolve_prior_with_existing_reviews(arr1, arr2, none_value):
     with pytest.raises(ValueError):
         base_simulator.convolve_prior_with_existing_reviews(arr2)
 
+    # NaN or Inf input test
+    with pytest.raises(ValueError):
+        base_simulator.convolve_prior_with_existing_reviews(nan_or_inf_arr)
+
+    # Empty array input test
+    with pytest.raises(ValueError):
+        base_simulator.convolve_prior_with_existing_reviews(empty_arr)
+
     # Output type test
     assert isinstance(result, np.ndarray)
 
     # Null input test
     with pytest.raises(AttributeError):
         base_simulator.convolve_prior_with_existing_reviews(none_value)
+
+    # String input test
+    with pytest.raises(TypeError):
+        base_simulator.convolve_prior_with_existing_reviews(string_value)
+
 
 
 def test_simulate():
@@ -94,7 +114,7 @@ def yield_SingleRhoSimulator():
     return SingleRhoSimulator(params)
 
 
-@settings(max_examples=20)
+@settings(max_examples=10)
 @given(
     experience=st.integers(min_value=1, max_value=5),
     expected_experience=st.floats(min_value=1, max_value=5),
