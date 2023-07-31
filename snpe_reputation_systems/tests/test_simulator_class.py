@@ -53,8 +53,8 @@ generate_simulation_parameters method to be implemented by subclasses
 (SingleRhoSimulator, DoubleRhoSimulator...), we cannot directly instantiate 
 BaseSimulator for testing. We could move the TestSimulator class definition 
 outside the test_simulate_errors function, but that would be slightly less 
-clean, as the dummy implementation is only relevant 
-within this particular test."""
+clean, this implementation strategy is only needed 
+within this particular test... yet"""
 
 
 def test_simulate_errors():
@@ -229,6 +229,39 @@ def test_rating_calculator(delta, simulation_id):
         assert result == 3
     else:
         assert result == 4
+
+
+# NEW ASSERT INTO TEST (WIP):
+
+# From simulator_class.py
+# (inside SingleRhoSimulator class, simulate_review_histogram method):
+
+#                if len(simulated_reviews) > 1:
+#                    if np.sum(simulated_reviews[-1]) - np.sum(simulated_reviews[-2]) != 1:
+#                        raise ValueError("""
+#                        Please check the histograms provided in the array of existing reviews. These should be in the form
+#                        of cumulative histograms and should only add 1 rating at a time.
+#                        """)
+
+# let's try to implement this test here (needs debugging):
+
+"""
+def test_single_rho_simulator_histogram_error():
+    params = {
+        "review_prior": np.array([1, 1, 1, 1, 1]),
+        "tendency_to_rate": 0.5,
+        "simulation_type": "histogram",
+        # other necessary parameters
+    }
+
+    simulator = SingleRhoSimulator(params)
+    existing_reviews = [np.array([1, 1, 0, 0, 0]), np.array([2, 1, 0, 0, 0])]
+
+    # Make sure the reviews are different
+    assert not np.array_equal(existing_reviews[0], existing_reviews[1])
+
+    with pytest.raises(ValueError, match="No change in reviews. Check the provided review data."):
+        simulator.simulate_review_histogram(0, None, existing_reviews)"""
 
 
 # class TestDoubleRhoSimulator:

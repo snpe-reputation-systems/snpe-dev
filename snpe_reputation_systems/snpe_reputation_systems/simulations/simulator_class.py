@@ -288,12 +288,16 @@ class SingleRhoSimulator(BaseSimulator):
                 current_histogram[rating_index] += 1
                 simulated_reviews.append(current_histogram)
                 if len(simulated_reviews) > 1:
-                    assert (
+                    if (
                         np.sum(simulated_reviews[-1]) - np.sum(simulated_reviews[-2])
-                    ) == 1, """
-                    Please check the histograms provided in the array of existing reviews. These should be in the form
-                    of cumulative histograms and should only add 1 rating at a time
-                    """
+                        != 1
+                    ):
+                        raise ValueError(
+                            """
+                        Please check the histograms provided in the array of existing reviews. These should be in the form
+                        of cumulative histograms and should only add 1 rating at a time.
+                        """
+                        )
                 total_visitors -= 1
 
         for visitor in range(total_visitors):
