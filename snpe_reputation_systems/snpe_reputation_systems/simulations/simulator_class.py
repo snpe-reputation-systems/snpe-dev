@@ -74,47 +74,34 @@ class BaseSimulator:
         **kwargs,
     ) -> None:
         if existing_reviews is not None:
-            assert (
-                simulation_parameters is not None
-            ), f"""
-            Existing reviews for products supplied, but no simulation parameters given
-            """
-            assert (
-                num_reviews_per_simulation is not None
-            ), f"""
-            Existing reviews for products supplied,but num_reviews_per_simulation not given. This gives the number of
-            TOTAL reviews per product desired
-            """
-            # Run checks on the shape and initial values of the review timeseries provided. These checks remove
-            # the first value in the timeseries before returning it (as that first value is automatically re-appended
-            # during simulations)
+            if simulation_parameters is None:
+                raise ValueError(
+                    "Existing reviews for products supplied, but no simulation parameters given"
+                )
+            if num_reviews_per_simulation is None:
+                raise ValueError(
+                    "Existing reviews for products supplied,but num_reviews_per_simulation not given. This gives the number of"
+                    "TOTAL reviews per product desired"
+                )
             existing_reviews = check_existing_reviews(existing_reviews)
-            # Also pick num_products = num_simulations from the provided existing reviews if the tests succeed. The
-            # provided num_simulations will then be ignored
             num_simulations = len(existing_reviews)
 
         if num_reviews_per_simulation is not None:
-            assert (
-                len(num_reviews_per_simulation) == num_simulations
-            ), f"""
-            {num_simulations} simulations to be done,
-            but {len(num_reviews_per_simulation)} review counts per simulation provided
-            """
+            if len(num_reviews_per_simulation) != num_simulations:
+                raise ValueError(
+                    f"{num_simulations} simulations to be done, "
+                    f"but {len(num_reviews_per_simulation)} review counts per simulation provided"
+                )
 
         if simulation_parameters is not None:
-            # Check that the provided simulation parameters have all the parameters (i.e, dict keys)
-            # that should be there. This is done by comparing to a dummy set of generated parameters
             dummy_parameters = self.generate_simulation_parameters(10)
-            assert set(simulation_parameters) == set(
-                dummy_parameters
-            ), f"""
-            Found parameters {simulation_parameters.keys()} in the provided parameters; expected
-            {dummy_parameters.keys()} as simulation parameters instead
-            """
+            if set(simulation_parameters) != set(dummy_parameters):
+                raise KeyError(
+                    f"Found parameters {simulation_parameters.keys()} in the provided parameters; expected"
+                    f"{dummy_parameters.keys()} as simulation parameters instead"
+                )
         else:
             simulation_parameters = self.generate_simulation_parameters(num_simulations)
-        # Run shape checks on the input dict of simulation parameters
-        # Store the number of distribution samples per parameter if the checks succeed
         self.params["num_dist_samples"] = check_simulation_parameters(
             simulation_parameters, num_simulations
         )

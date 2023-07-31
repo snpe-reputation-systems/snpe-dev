@@ -24,7 +24,7 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 
 def test_simulator_init_errors():
     params = {
-        "review_prior": np.array([1, 1, 1, 1, 1, 1]),  # one element too many
+        "review_prior": np.array([1, 1, 1, 1, 1, 1]),  # more than 5 parameters
         "tendency_to_rate": 1.0,
         "simulation_type": "histogram",
     }
@@ -43,6 +43,65 @@ def test_simulator_init_errors():
         ValueError, match="Can only simulate review histogram or timeseries"
     ):
         BaseSimulator(params)
+
+
+"""Fernando --> reason why we need to define the TestSimulator class 
+    inside the test_simulate_errors function in the next code block:
+
+Since BaseSimulator is likely an abstract base class that leaves 
+generate_simulation_parameters method to be implemented by subclasses
+(SingleRhoSimulator, DoubleRhoSimulator...), we cannot directly instantiate 
+BaseSimulator for testing. We could move the TestSimulator class definition 
+outside the test_simulate_errors function, but that would be slightly less 
+clean, as the dummy implementation is only relevant 
+within this particular test."""
+
+
+def test_simulate_errors():
+    class TestSimulator(BaseSimulator):
+        @classmethod
+        def generate_simulation_parameters(cls, num_simulations: int) -> dict:
+            # minimal implementation of generate_simulation_parameters
+            return {"param1": 1}
+
+    params = {
+        "review_prior": np.array([1, 2, 3, 4, 5]),
+        "tendency_to_rate": 0.5,
+        "simulation_type": "histogram",
+    }
+    simulator = TestSimulator(params)
+
+    # Test existing reviews without simulation parameters
+    with pytest.raises(
+        ValueError,
+        match="Existing reviews for products supplied, but no simulation parameters given",
+    ):
+        simulator.simulate(5, existing_reviews=[np.array([1, 2, 3])])
+
+    # Test existing reviews without num_reviews_per_simulation
+    with pytest.raises(
+        ValueError,
+        match="Existing reviews for products supplied,but num_reviews_per_simulation not given",
+    ):
+        simulator.simulate(
+            5, simulation_parameters={}, existing_reviews=[np.array([1, 2, 3])]
+        )
+
+    # Test mismatching num_reviews_per_simulation and num_simulations
+    with pytest.raises(
+        ValueError,
+        match=r"\d+ simulations to be done, but \d+ review counts per simulation provided",
+    ):
+        simulator.simulate(5, num_reviews_per_simulation=np.array([1, 2, 3]))
+
+    # Test incorrect simulation_parameters
+    with pytest.raises(
+        KeyError,
+        match=r"Found parameters dict_keys\(\[.*\]\) in the provided parameters; expecteddict_keys\(\[.*\]\) as simulation parameters instead",
+    ):
+        simulator.simulate(
+            5, simulation_parameters={"incorrect_key": "incorrect_value"}
+        )
 
 
 @given(
