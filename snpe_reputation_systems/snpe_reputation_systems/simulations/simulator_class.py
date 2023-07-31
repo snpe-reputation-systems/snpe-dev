@@ -15,18 +15,17 @@ from ..utils.tqdm_utils import tqdm_joblib
 class BaseSimulator:
     def __init__(self, params: dict):
         self.review_prior = params.pop("review_prior")
-        assert (
-            len(self.review_prior) == 5
-        ), f"""
-        Prior Dirichlet distribution of simulated reviews needs to have 5 parameters,
-        but found {len(self.review_prior)}
-        """
+        if len(self.review_prior) != 5:
+            raise ValueError(
+                f"Prior Dirichlet distribution of simulated reviews needs to have 5 parameters, "
+                f"but found {len(self.review_prior)}"
+            )
         self.tendency_to_rate = params.pop("tendency_to_rate")
         self.simulation_type = params.pop("simulation_type")
-        assert self.simulation_type in [
-            "histogram",
-            "timeseries",
-        ], f"Can only simulate review histogram or timeseries, got simulation_type={self.simulation_type}"
+        if self.simulation_type not in ["histogram", "timeseries"]:
+            raise ValueError(
+                f"Can only simulate review histogram or timeseries, got simulation_type={self.simulation_type}"
+            )
         self.params = params
 
     @classmethod

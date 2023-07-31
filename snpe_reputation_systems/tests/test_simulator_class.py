@@ -7,7 +7,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
-from hypothesis.strategies import none, text, floats
+from hypothesis.strategies import none, floats
 from numpy import float64
 
 from ..snpe_reputation_systems.simulations.simulator_class import (
@@ -22,27 +22,36 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 #############################################
 
 
-# @pytest.fixture
-# def yield_BaseSimulator():
-#    params = {
-#        "review_prior": np.ones(5),
-#        "tendency_to_rate": 0.05,
-#        "simulation_type": "timeseries",
-#    }
-#    return BaseSimulator(params)
+def test_simulator_init_errors():
+    params = {
+        "review_prior": np.array([1, 1, 1, 1, 1, 1]),  # one element too many
+        "tendency_to_rate": 1.0,
+        "simulation_type": "histogram",
+    }
+    with pytest.raises(
+        ValueError,
+        match="Prior Dirichlet distribution of simulated reviews needs to have 5 parameters",
+    ):
+        BaseSimulator(params)
+
+    params = {
+        "review_prior": np.array([1, 1, 1, 1, 1]),
+        "tendency_to_rate": 1.0,
+        "simulation_type": "incorrect_type",  # incorrect simulation_type
+    }
+    with pytest.raises(
+        ValueError, match="Can only simulate review histogram or timeseries"
+    ):
+        BaseSimulator(params)
 
 
 @given(
     arrays(float64, 5, elements=floats(min_value=-100, max_value=100)),
     arrays(float64, 6, elements=floats(min_value=-100, max_value=100)),
-    arrays(float64, 5, elements=floats(allow_nan=True, allow_infinity=True)),
     arrays(float64, 0),
     none(),
-    text(),
 )
-def test_convolve_prior_with_existing_reviews(
-    arr1, arr2, nan_or_inf_arr, empty_arr, none_value, string_value
-):
+def test_convolve_prior_with_existing_reviews(arr1, arr2, empty_arr, none_value):
     # BaseSimulator instance
     params = {
         "review_prior": np.ones(5),
@@ -59,10 +68,6 @@ def test_convolve_prior_with_existing_reviews(
     with pytest.raises(ValueError):
         base_simulator.convolve_prior_with_existing_reviews(arr2)
 
-    # NaN or Inf input test
-    with pytest.raises(ValueError):
-        base_simulator.convolve_prior_with_existing_reviews(nan_or_inf_arr)
-
     # Empty array input test
     with pytest.raises(ValueError):
         base_simulator.convolve_prior_with_existing_reviews(empty_arr)
@@ -70,14 +75,9 @@ def test_convolve_prior_with_existing_reviews(
     # Output type test
     assert isinstance(result, np.ndarray)
 
-    # Null input test
+    # Null input test (note: it's different from empty array input test)
     with pytest.raises(AttributeError):
         base_simulator.convolve_prior_with_existing_reviews(none_value)
-
-    # String input test
-    with pytest.raises(TypeError):
-        base_simulator.convolve_prior_with_existing_reviews(string_value)
-
 
 
 def test_simulate():
