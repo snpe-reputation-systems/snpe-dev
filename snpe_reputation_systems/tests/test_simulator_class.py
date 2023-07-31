@@ -7,16 +7,11 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
-from hypothesis.strategies import none, floats
+from hypothesis.strategies import floats, none
 from numpy import float64
 
 from ..snpe_reputation_systems.simulations.simulator_class import (
-    BaseSimulator,
-    DoubleRhoSimulator,
-    HerdingSimulator,
-    SingleRhoSimulator,
-)
-
+    BaseSimulator, DoubleRhoSimulator, HerdingSimulator, SingleRhoSimulator)
 
 # class TestBaseSimulator
 #############################################
