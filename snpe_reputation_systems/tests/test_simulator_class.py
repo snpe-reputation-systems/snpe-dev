@@ -11,7 +11,11 @@ from hypothesis.strategies import floats, none
 from numpy import float64
 
 from ..snpe_reputation_systems.simulations.simulator_class import (
-    BaseSimulator, DoubleRhoSimulator, HerdingSimulator, SingleRhoSimulator)
+    BaseSimulator,
+    DoubleRhoSimulator,
+    HerdingSimulator,
+    SingleRhoSimulator,
+)
 
 # class TestBaseSimulator
 #############################################
