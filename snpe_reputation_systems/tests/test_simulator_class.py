@@ -20,6 +20,7 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 # class TestBaseSimulator
 #############################################
 
+# Assert translated:
 
 def test_simulator_init_errors():
     params = {
@@ -55,6 +56,7 @@ outside the test_simulate_errors function, but that would be slightly less
 clean, this implementation strategy is only needed 
 within this particular test... yet"""
 
+# ChatGPT test suggestion:
 
 def test_simulate_errors():
     class TestSimulator(BaseSimulator):
@@ -102,6 +104,7 @@ def test_simulate_errors():
             5, simulation_parameters={"incorrect_key": "incorrect_value"}
         )
 
+# Hypothesis:
 
 @given(
     arrays(float64, 5, elements=floats(min_value=-100, max_value=100)),
@@ -162,6 +165,7 @@ def test_load_simulations():
 # class TestSingleRhoSimulator:
 #############################################
 
+# Instantiate SingleRho:
 
 def yield_SingleRhoSimulator():
     params = {
@@ -171,6 +175,7 @@ def yield_SingleRhoSimulator():
     }
     return SingleRhoSimulator(params)
 
+# Assert translated:
 
 @settings(max_examples=10)
 @given(
@@ -202,6 +207,7 @@ def test_mismatch_calculator(
     with pytest.raises(ValueError):
         simulator.mismatch_calculator(experience, wrong_expected_experience)
 
+# Hypothesis:
 
 @settings(max_examples=20)
 @given(
@@ -235,12 +241,12 @@ def test_rating_calculator(delta, simulation_id):
 # From simulator_class.py
 # (inside SingleRhoSimulator class, simulate_review_histogram method):
 
-#                if len(simulated_reviews) > 1:
-#                    if np.sum(simulated_reviews[-1]) - np.sum(simulated_reviews[-2]) != 1:
-#                        raise ValueError("""
-#                        Please check the histograms provided in the array of existing reviews. These should be in the form
-#                        of cumulative histograms and should only add 1 rating at a time.
-#                        """)
+#  if len(simulated_reviews) > 1:
+#      if np.sum(simulated_reviews[-1]) - np.sum(simulated_reviews[-2]) != 1:
+#          raise ValueError("""
+#          Please check the histograms provided in the array of existing reviews. These should be in the form
+#          of cumulative histograms and should only add 1 rating at a time.
+#          """)
 
 # let's try to implement this test here (needs debugging):
 
