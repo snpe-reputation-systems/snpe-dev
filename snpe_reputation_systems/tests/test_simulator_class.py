@@ -22,6 +22,7 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 
 # Assert translated:
 
+
 def test_simulator_init_errors():
     params = {
         "review_prior": np.array([1, 1, 1, 1, 1, 1]),  # more than 5 parameters
@@ -45,32 +46,20 @@ def test_simulator_init_errors():
         BaseSimulator(params)
 
 
-"""Fernando --> reason why we need to define the TestSimulator class 
-    inside the test_simulate_errors function in the next code block:
+# ChatGPT test suggestion (WIP):
+# Returns an example dictionary to enable tests
+def generate_simulation_parameters_stub(num_simulations: int) -> dict:
+    return {"param1": 1}
 
-Since BaseSimulator is likely an abstract base class that leaves 
-generate_simulation_parameters method to be implemented by subclasses
-(SingleRhoSimulator, DoubleRhoSimulator...), we cannot directly instantiate 
-BaseSimulator for testing. We could move the TestSimulator class definition 
-outside the test_simulate_errors function, but that would be slightly less 
-clean, this implementation strategy is only needed 
-within this particular test... yet"""
-
-# ChatGPT test suggestion:
 
 def test_simulate_errors():
-    class TestSimulator(BaseSimulator):
-        @classmethod
-        def generate_simulation_parameters(cls, num_simulations: int) -> dict:
-            # minimal implementation of generate_simulation_parameters
-            return {"param1": 1}
-
     params = {
         "review_prior": np.array([1, 2, 3, 4, 5]),
         "tendency_to_rate": 0.5,
         "simulation_type": "histogram",
     }
-    simulator = TestSimulator(params)
+    simulator = BaseSimulator(params)
+    simulator.generate_simulation_parameters = generate_simulation_parameters_stub
 
     # Test existing reviews without simulation parameters
     with pytest.raises(
@@ -104,7 +93,9 @@ def test_simulate_errors():
             5, simulation_parameters={"incorrect_key": "incorrect_value"}
         )
 
+
 # Hypothesis:
+
 
 @given(
     arrays(float64, 5, elements=floats(min_value=-100, max_value=100)),
@@ -167,6 +158,7 @@ def test_load_simulations():
 
 # Instantiate SingleRho:
 
+
 def yield_SingleRhoSimulator():
     params = {
         "review_prior": np.array([1, 1, 1, 1, 1]),
@@ -175,7 +167,9 @@ def yield_SingleRhoSimulator():
     }
     return SingleRhoSimulator(params)
 
+
 # Assert translated:
+
 
 @settings(max_examples=10)
 @given(
@@ -207,7 +201,9 @@ def test_mismatch_calculator(
     with pytest.raises(ValueError):
         simulator.mismatch_calculator(experience, wrong_expected_experience)
 
+
 # Hypothesis:
+
 
 @settings(max_examples=20)
 @given(
