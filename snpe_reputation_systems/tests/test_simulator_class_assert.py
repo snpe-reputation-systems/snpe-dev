@@ -23,6 +23,7 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 
 class TestBaseSimulator:
     def get_base_simulator(
+        self,
         review_prior=np.array([1, 1, 1, 1, 1]),
         tendency_to_rate=0.05,
         simulation_type="timeseries",
@@ -55,7 +56,7 @@ class TestBaseSimulator:
         ),
         text(min_size=3, max_size=15),
     )
-    def test___init__(array_int5, array_not5, random_string):
+    def test___init__(self, array_int5, array_not5, random_string):
         """
         Testing builder method by providing it with innapropriate paramerters
         according to the former "assert"cases provided for BaseSimulator
@@ -104,7 +105,7 @@ class TestBaseSimulator:
         arrays(int, 0),
     )
     def test_convolve_prior_with_existing_reviews(
-        array_not5, array_int5, empty_arr, none_value
+        self, array_not5, array_int5, empty_arr, none_value
     ):
         """
         Testing "convolve_prior_with_existing_reviews"
