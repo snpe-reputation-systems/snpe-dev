@@ -133,7 +133,8 @@ class TestBaseSimulator:
         with pytest.raises(ValueError):
             base_simulator.convolve_prior_with_existing_reviews(empty_arr)
 
-    def gen_random_existing_reviews(self, num_products: int, depth: int):
+    @staticmethod
+    def _gen_random_existing_reviews(num_products: int, depth: int):
         """
         Assistant function for "test_simulate" method, generates a random array
         which is valid to be passed as the "existing_reviews" parameter. The number
@@ -159,8 +160,9 @@ class TestBaseSimulator:
 
         return existing_reviews
 
+    @staticmethod
     @composite
-    def _integer_and_array(self, draw):
+    def _integer_and_array(draw):
         """
         Function for composite hypothesis strategy.
 
@@ -179,9 +181,7 @@ class TestBaseSimulator:
         _integer_and_array(),
         arrays(int, 5, elements=integers(min_value=0, max_value=5)),
         st.lists(
-            single_array_strategy=arrays(
-                dtype=np.int32, shape=st.integers(min_value=1, max_value=5)
-            ),
+            arrays(dtype=np.int32, shape=st.integers(min_value=1, max_value=5)),
             min_size=1,
             max_size=10,
         ),
@@ -202,13 +202,13 @@ class TestBaseSimulator:
         # Expect ValueError if simulation_parameters is None
         with pytest.raises(ValueError):
             base_simulator.simulate(
-                existing_reviews=self.gen_random_existing_reviews(num_simulations, 10)
+                existing_reviews=self._gen_random_existing_reviews(num_simulations, 10)
             )
 
         # Expect ValueError if num_reviews_per_simulation is None
         with pytest.raises(ValueError):
             base_simulator.simulate(
-                existing_reviews=self.gen_random_existing_reviews(num_simulations, 10),
+                existing_reviews=self._gen_random_existing_reviews(num_simulations, 10),
                 simulation_parameters={},
             )
 
