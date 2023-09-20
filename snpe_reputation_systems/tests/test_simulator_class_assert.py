@@ -15,7 +15,6 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
     SingleRhoSimulator,
     DoubleRhoSimulator,
     HerdingSimulator,
-    SingleRhoSimulator,
 )
 
 # class TestBaseSimulator
