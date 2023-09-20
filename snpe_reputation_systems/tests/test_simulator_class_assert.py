@@ -49,13 +49,11 @@ class TestBaseSimulator:
     @given(
         arrays(int, 5, elements=integers(min_value=0, max_value=100)),
         arrays(
-            arrays(
-                dtype=int,
-                shape=(integers(1, 10),),
-                elements=integers(min_value=0, max_value=100),
-            ),
-            text(min_size=3, max_size=15),
+            int,
+            shape=tuples(integers(1, 10)),
+            elements=integers(min_value=0, max_value=100),
         ),
+        text(min_size=3, max_size=15),
     )
     def test___init__(array_int5, array_not5, random_string):
         """
@@ -99,7 +97,7 @@ class TestBaseSimulator:
     @given(
         arrays(
             dtype=int,
-            shape=(integers(1, 10),),
+            shape=tuples(integers(1, 10)),
             elements=integers(min_value=0, max_value=100),
         ),
         arrays(dtype=int, shape=5, elements=integers(min_value=0, max_value=100)),
