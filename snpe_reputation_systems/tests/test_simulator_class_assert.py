@@ -104,7 +104,7 @@ class TestBaseSimulator:
         arrays(int, 0),
     )
     def test_convolve_prior_with_existing_reviews(
-        self, array_not5, array_int5, empty_arr, none_value
+        self, array_not5, array_int5, empty_arr
     ):
         """
         Testing "convolve_prior_with_existing_reviews"
