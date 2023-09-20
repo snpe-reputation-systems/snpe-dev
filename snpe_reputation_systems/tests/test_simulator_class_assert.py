@@ -177,16 +177,8 @@ class TestBaseSimulator:
         return n, array  # num_simulations, num_reviews_per_simulation
 
     @settings(max_examples=10)
-    @given(
-        _integer_and_array(),
-        arrays(int, 5, elements=integers(min_value=0, max_value=5)),
-        st.lists(
-            arrays(dtype=np.int32, shape=st.integers(min_value=1, max_value=5)),
-            min_size=1,
-            max_size=10,
-        ),
-    )
-    def test_simulate(self, int_and_array, array):
+    @given(_integer_and_array())
+    def test_simulate(self, int_and_array):
         """
         Testing "simulate" method according to the former "assert"cases provided for this
         BaseSimulator method in simulator_class.py
