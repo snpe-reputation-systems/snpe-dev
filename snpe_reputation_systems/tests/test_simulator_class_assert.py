@@ -133,7 +133,7 @@ class TestBaseSimulator:
         with pytest.raises(ValueError):
             base_simulator.convolve_prior_with_existing_reviews(empty_arr)
 
-    def gen_random_existing_reviews(num_products: int, depth: int):
+    def gen_random_existing_reviews(self, num_products: int, depth: int):
         """
         Assistant function for "test_simulate" method, generates a random array
         which is valid to be passed as the "existing_reviews" parameter. The number
@@ -217,7 +217,7 @@ class TestBaseSimulator:
         # If num_reviews_per_simulation exists:
 
         # Expect ValueError if len(num_reviews_per_simulation) != num_simulations
-        #base_simulator.simulate(num_simulations, num_reviews_per_simulation)
+        # base_simulator.simulate(num_simulations, num_reviews_per_simulation)
 
         # If simulation_parameters exists:
 
