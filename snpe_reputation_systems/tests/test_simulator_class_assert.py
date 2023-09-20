@@ -177,14 +177,16 @@ class TestBaseSimulator:
         return n, array  # num_simulations, num_reviews_per_simulation
 
     @settings(max_examples=10)
-    @given(_integer_and_array())
+    @given(
+        _integer_and_array()
+    )  # IMPORTANT There are missing elements in given to be added as the test_simulate is completed
     def test_simulate(self, int_and_array):
         """
         Testing "simulate" method according to the former "assert"cases provided for this
         BaseSimulator method in simulator_class.py
         """
 
-        num_simulations, num_reviews_per_simulation = int_and_array
+        given_num_simulations, given_num_reviews_per_simulation = int_and_array
 
         # Instantiate base simulator
         base_simulator = TestBaseSimulator.get_base_simulator()
@@ -194,13 +196,19 @@ class TestBaseSimulator:
         # Expect ValueError if simulation_parameters is None
         with pytest.raises(ValueError):
             base_simulator.simulate(
-                existing_reviews=self._gen_random_existing_reviews(num_simulations, 10)
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations, 10
+                ),
             )
 
         # Expect ValueError if num_reviews_per_simulation is None
         with pytest.raises(ValueError):
             base_simulator.simulate(
-                existing_reviews=self._gen_random_existing_reviews(num_simulations, 10),
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations, 10
+                ),
                 simulation_parameters={},
             )
 
