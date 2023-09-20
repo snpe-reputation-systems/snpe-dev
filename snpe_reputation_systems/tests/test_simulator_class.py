@@ -20,6 +20,8 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 # class TestBaseSimulator
 #############################################
 
+# Assert translated:
+
 
 def test_simulator_init_errors():
     params = {
@@ -44,31 +46,20 @@ def test_simulator_init_errors():
         BaseSimulator(params)
 
 
-"""Fernando --> reason why we need to define the TestSimulator class 
-    inside the test_simulate_errors function in the next code block:
-
-Since BaseSimulator is likely an abstract base class that leaves 
-generate_simulation_parameters method to be implemented by subclasses
-(SingleRhoSimulator, DoubleRhoSimulator...), we cannot directly instantiate 
-BaseSimulator for testing. We could move the TestSimulator class definition 
-outside the test_simulate_errors function, but that would be slightly less 
-clean, this implementation strategy is only needed 
-within this particular test... yet"""
+# ChatGPT test suggestion (WIP):
+# Returns an example dictionary to enable tests
+def generate_simulation_parameters_stub(num_simulations: int) -> dict:
+    return {"param1": 1}
 
 
 def test_simulate_errors():
-    class TestSimulator(BaseSimulator):
-        @classmethod
-        def generate_simulation_parameters(cls, num_simulations: int) -> dict:
-            # minimal implementation of generate_simulation_parameters
-            return {"param1": 1}
-
     params = {
         "review_prior": np.array([1, 2, 3, 4, 5]),
         "tendency_to_rate": 0.5,
         "simulation_type": "histogram",
     }
-    simulator = TestSimulator(params)
+    simulator = BaseSimulator(params)
+    simulator.generate_simulation_parameters = generate_simulation_parameters_stub
 
     # Test existing reviews without simulation parameters
     with pytest.raises(
@@ -101,6 +92,9 @@ def test_simulate_errors():
         simulator.simulate(
             5, simulation_parameters={"incorrect_key": "incorrect_value"}
         )
+
+
+# Hypothesis:
 
 
 @given(
@@ -162,6 +156,8 @@ def test_load_simulations():
 # class TestSingleRhoSimulator:
 #############################################
 
+# Instantiate SingleRho:
+
 
 def yield_SingleRhoSimulator():
     params = {
@@ -170,6 +166,9 @@ def yield_SingleRhoSimulator():
         "simulation_type": "histogram",
     }
     return SingleRhoSimulator(params)
+
+
+# Assert translated:
 
 
 @settings(max_examples=10)
@@ -201,6 +200,9 @@ def test_mismatch_calculator(
     # out-of-range expected experience test
     with pytest.raises(ValueError):
         simulator.mismatch_calculator(experience, wrong_expected_experience)
+
+
+# Hypothesis:
 
 
 @settings(max_examples=20)
@@ -235,12 +237,12 @@ def test_rating_calculator(delta, simulation_id):
 # From simulator_class.py
 # (inside SingleRhoSimulator class, simulate_review_histogram method):
 
-#                if len(simulated_reviews) > 1:
-#                    if np.sum(simulated_reviews[-1]) - np.sum(simulated_reviews[-2]) != 1:
-#                        raise ValueError("""
-#                        Please check the histograms provided in the array of existing reviews. These should be in the form
-#                        of cumulative histograms and should only add 1 rating at a time.
-#                        """)
+#  if len(simulated_reviews) > 1:
+#      if np.sum(simulated_reviews[-1]) - np.sum(simulated_reviews[-2]) != 1:
+#          raise ValueError("""
+#          Please check the histograms provided in the array of existing reviews. These should be in the form
+#          of cumulative histograms and should only add 1 rating at a time.
+#          """)
 
 # let's try to implement this test here (needs debugging):
 
