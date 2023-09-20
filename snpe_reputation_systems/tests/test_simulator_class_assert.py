@@ -4,18 +4,15 @@ import hypothesis
 import numpy as np
 import pandas as pd
 import pytest
-from hypothesis import assume, composite, given, settings
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
-from hypothesis.strategies import floats, integers, none, text, tuples
+from hypothesis.strategies import (composite, floats, integers, none, text,
+                                   tuples)
 from numpy import float64
 
 from ..snpe_reputation_systems.simulations.simulator_class import (
-    BaseSimulator,
-    DoubleRhoSimulator,
-    HerdingSimulator,
-    SingleRhoSimulator,
-)
+    BaseSimulator, DoubleRhoSimulator, HerdingSimulator, SingleRhoSimulator)
 
 # class TestBaseSimulator
 #############################################
