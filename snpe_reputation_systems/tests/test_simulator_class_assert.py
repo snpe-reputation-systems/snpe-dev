@@ -4,7 +4,7 @@ import hypothesis
 import numpy as np
 import pandas as pd
 import pytest
-from hypothesis import assume, given, settings
+from hypothesis import assume, composite, given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 from hypothesis.strategies import floats, integers, none, text, tuples
@@ -115,7 +115,7 @@ class TestBaseSimulator:
         # Hypothesis rule so array_not5 cannot take the "correct" shape (5,)
         assume(array_not5.shape != (5,))
 
-        # Instanciate base simulator
+        # Instantiate base simulator
         base_simulator = TestBaseSimulator.get_base_simulator()
 
         # Testing correct cases
@@ -132,3 +132,93 @@ class TestBaseSimulator:
         # Testing  incorrect cases (2)
         with pytest.raises(ValueError):
             base_simulator.convolve_prior_with_existing_reviews(empty_arr)
+
+    def gen_random_existing_reviews(num_products: int, depth: int):
+        """
+        Assistant function for "test_simulate" method, generates a random array
+        which is valid to be passed as the "existing_reviews" parameter. The number
+        of reviews is fixed by the parameter "depth" while the number of products is
+        be adjusted through the parameter "num_products". It returns an array of shape
+        (num_products, depth, 5) where the first row of each product is [1, 1, 1, 1, 1]
+        """
+
+        # Initialize array with shape (num_products, time, 5)
+        existing_reviews = np.zeros((num_products, depth, 5), dtype=int)
+
+        # Fill array
+        for i in range(num_products):
+            # First row of each product
+            existing_reviews[i, 0] = np.array([1, 1, 1, 1, 1])
+
+            # Adding the subsequent lines with reviews being added randomly
+            for j in range(1, depth):
+                add_index = np.random.choice(5)
+                existing_reviews[i, j] = existing_reviews[i, j - 1] + np.array(
+                    [1 if k == add_index else 0 for k in range(5)]
+                )
+
+        return existing_reviews
+
+    @composite
+    def _integer_and_array(self, draw):
+        """
+        Function for composite hypothesis strategy.
+
+        This is required as in the "simulate" method, num_reviews_per_simulation
+        is expected to have a length equal to num_simulations.
+
+        Accordingly, the function return the value for num_simulations and an appropriate
+        num_reviews_per_simulation array
+        """
+        n = draw(integers(min_value=1, max_value=50))
+        array = draw(arrays(int, n, elements=integers(min_value=0, max_value=50)))
+        return n, array  # num_simulations, num_reviews_per_simulation
+
+    @settings(max_examples=10)
+    @given(
+        _integer_and_array(),
+        arrays(int, 5, elements=integers(min_value=0, max_value=5)),
+        st.lists(
+            single_array_strategy=arrays(
+                dtype=np.int32, shape=st.integers(min_value=1, max_value=5)
+            ),
+            min_size=1,
+            max_size=10,
+        ),
+    )
+    def test_simulate(self, int_and_array, array):
+        """
+        Testing "simulate" method according to the former "assert"cases provided for this
+        BaseSimulator method in simulator_class.py
+        """
+
+        num_simulations, num_reviews_per_simulation = int_and_array
+
+        # Instantiate base simulator
+        base_simulator = TestBaseSimulator.get_base_simulator()
+
+        # If existing_reviews exists:
+
+        # Expect ValueError if simulation_parameters is None
+        with pytest.raises(ValueError):
+            base_simulator.simulate(
+                existing_reviews=self.gen_random_existing_reviews(num_simulations, 10)
+            )
+
+        # Expect ValueError if num_reviews_per_simulation is None
+        with pytest.raises(ValueError):
+            base_simulator.simulate(
+                existing_reviews=self.gen_random_existing_reviews(num_simulations, 10),
+                simulation_parameters={},
+            )
+
+        # If all three exist: code continues
+
+        # If num_reviews_per_simulation exists:
+
+        # Expect ValueError if len(num_reviews_per_simulation) != num_simulations
+        #base_simulator.simulate(num_simulations, num_reviews_per_simulation)
+
+        # If simulation_parameters exists:
+
+        # Expect KeyError if set(simulation_parameters) != set(dummy_parameters)
