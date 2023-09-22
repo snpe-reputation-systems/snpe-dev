@@ -23,6 +23,7 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 
 class TestBaseSimulator:
     def get_simulator(
+        self,
         review_prior=np.array([1, 1, 1, 1, 1]),
         tendency_to_rate=0.05,
         simulation_type="timeseries",
@@ -274,6 +275,7 @@ class TestBaseSimulator:
 
 class TestSingleRhoSimulator(TestBaseSimulator):
     def get_simulator(
+        self,
         review_prior=np.array([1, 1, 1, 1, 1]),
         tendency_to_rate=0.05,
         simulation_type="timeseries",
