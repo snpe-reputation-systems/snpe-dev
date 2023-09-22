@@ -138,12 +138,12 @@ class TestBaseSimulator:
         assume(array_not5.shape != (5,))
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator(
+        simulator = TestBaseSimulator.get_simulator(
             simulator_type=self.simulator_type
         )
 
         # Testing correct cases
-        result = base_simulator.convolve_prior_with_existing_reviews(array_int5)
+        result = simulator.convolve_prior_with_existing_reviews(array_int5)
 
         assert np.array_equal(result, np.ones(5) + array_int5)
 
@@ -151,11 +151,11 @@ class TestBaseSimulator:
 
         # Testing incorrect cases (1)
         with pytest.raises(ValueError):
-            base_simulator.convolve_prior_with_existing_reviews(array_not5)
+            simulator.convolve_prior_with_existing_reviews(array_not5)
 
         # Testing  incorrect cases (2)
         with pytest.raises(ValueError):
-            base_simulator.convolve_prior_with_existing_reviews(empty_arr)
+            simulator.convolve_prior_with_existing_reviews(empty_arr)
 
     @staticmethod
     def _gen_random_existing_reviews(num_products: int, depth: int):
@@ -230,7 +230,7 @@ class TestBaseSimulator:
         ) = int_and_array
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator(
+        simulator = get_simulator(
             simulator_type=self.simulator_type
         )
 
@@ -238,7 +238,7 @@ class TestBaseSimulator:
 
         ## Expect ValueError if simulation_parameters is None
         with pytest.raises(ValueError):
-            base_simulator.simulate(
+            simulator.simulate(
                 num_simulations=given_num_simulations,
                 existing_reviews=self._gen_random_existing_reviews(
                     given_num_simulations, depth_existing_reviews
@@ -247,7 +247,7 @@ class TestBaseSimulator:
 
             ## Expect ValueError if num_reviews_per_simulation is None
         with pytest.raises(ValueError):
-            base_simulator.simulate(
+            simulator.simulate(
                 num_simulations=given_num_simulations,
                 existing_reviews=self._gen_random_existing_reviews(
                     given_num_simulations, depth_existing_reviews
@@ -262,14 +262,14 @@ class TestBaseSimulator:
 
         ## Expect ValueError if len(num_reviews_per_simulation) != num_simulations
         with pytest.raises(ValueError):  # Case 1: existing_reviesw == None
-            base_simulator.simulate(
+            simulator.simulate(
                 num_simulations=given_num_simulations_2,
                 simulation_parameters={},
                 num_reviews_per_simulation=given_num_reviews_per_simulation,
             )
 
         with pytest.raises(ValueError):  # Case 2: existing_reviews != None
-            base_simulator.simulate(
+            simulator.simulate(
                 num_simulations=given_num_simulations,
                 existing_reviews=self._gen_random_existing_reviews(
                     given_num_simulations_2,
@@ -284,7 +284,7 @@ class TestBaseSimulator:
         ## Expect NotImplementedError if set(simulation_parameters) != set(dummy_parameters):
         ## This is a result of the method "generate_simulation_parameters" not being implemented still for BaseSimulator
         with pytest.raises(NotImplementedError):
-            base_simulator.simulate(
+            simulator.simulate(
                 num_simulations=given_num_simulations,
                 existing_reviews=self._gen_random_existing_reviews(
                     given_num_simulations, depth_existing_reviews
@@ -337,3 +337,7 @@ class TestSingleRhoSimulator(TestBaseSimulator):
         # out-of-range expected experience test
         with pytest.raises(ValueError):
             simulator.mismatch_calculator(experience, wrong_expected_experience)
+
+
+    @given()
+    def test_simulate_review_histogram(self):
