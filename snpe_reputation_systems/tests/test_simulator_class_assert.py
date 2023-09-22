@@ -17,19 +17,15 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
     SingleRhoSimulator,
 )
 
-# class TestBaseSimulator
-#############################################
 
-
-class TestBaseSimulator:
-    def get_simulator(
-        self,
+def get_simulator(
+        simulator_type: str,
         review_prior=np.array([1, 1, 1, 1, 1]),
         tendency_to_rate=0.05,
         simulation_type="timeseries",
     ):
         """
-        Returns a functional instance of BaseSimulator to use for the different
+        Returns a functional instance of the desired simulator class to use for the different
         tests for its methods.
 
         Although in most cases the default values set for `params` would work,
@@ -44,7 +40,19 @@ class TestBaseSimulator:
             "simulation_type": simulation_type,
         }
 
-        return BaseSimulator(params)
+        if simulator_type == "Base":
+            return BaseSimulator(params)
+        
+        elif simulator_type == "Base":
+            return SingleRhoSimulator(params)
+
+# class TestBaseSimulator
+#############################################
+
+
+class TestBaseSimulator:
+    def __init__(self) -> None:
+        self.simulator_type = "Base"
 
     @settings(max_examples=10)
     @given(
@@ -68,15 +76,15 @@ class TestBaseSimulator:
 
         # Testing correct cases
 
-        assert isinstance(TestBaseSimulator.get_simulator(self), BaseSimulator)
+        assert isinstance(TestBaseSimulator.get_simulator(simulator_type = self.simulator_type), BaseSimulator)
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(self, review_prior=array_int5),
+            TestBaseSimulator.get_simulator(simulator_type = self.simulator_type, review_prior=array_int5),
             BaseSimulator,
         )
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(self, simulation_type="histogram"),
+            TestBaseSimulator.get_simulator(simulator_type = self.simulator_type, simulation_type="histogram"),
             BaseSimulator,
         )
 
@@ -86,14 +94,14 @@ class TestBaseSimulator:
             ValueError,
             match="Prior Dirichlet distribution of simulated reviews needs to have 5 parameters",
         ):
-            TestBaseSimulator.get_simulator(self, review_prior=array_not5)
+            TestBaseSimulator.get_simulator(simulator_type = self.simulator_type, review_prior=array_not5)
 
         # Testing incorrect values for "simulation type"
 
         with pytest.raises(
             ValueError, match="Can only simulate review histogram or timeseries"
         ):
-            TestBaseSimulator.get_simulator(self, simulation_type=random_string)
+            TestBaseSimulator.get_simulator(simulator_type = self.simulator_type, simulation_type=random_string)
 
     @settings(max_examples=10)
     @given(
@@ -118,7 +126,7 @@ class TestBaseSimulator:
         assume(array_not5.shape != (5,))
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator(self)
+        base_simulator = TestBaseSimulator.get_simulator(simulator_type = self.simulator_type)
 
         # Testing correct cases
         result = base_simulator.convolve_prior_with_existing_reviews(array_int5)
@@ -208,7 +216,7 @@ class TestBaseSimulator:
         ) = int_and_array
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator(self)
+        base_simulator = TestBaseSimulator.get_simulator(simulator_type = self.simulator_type)
 
         # If existing_reviews is not None:
 
@@ -275,29 +283,8 @@ class TestBaseSimulator:
 
 
 class TestSingleRhoSimulator(TestBaseSimulator):
-    def get_simulator(
-        self,
-        review_prior=np.array([1, 1, 1, 1, 1]),
-        tendency_to_rate=0.05,
-        simulation_type="timeseries",
-    ):
-        """
-        Returns a functional instance of BaseSimulator to use for the different
-        tests for its methods.
-
-        Although in most cases the default values set for `params` would work,
-        the option to manually modify these has been considered in case such
-        flexibility is necesary later in the testing design and implementation
-        process.
-        """
-
-        params = {
-            "review_prior": review_prior,
-            "tendency_to_rate": tendency_to_rate,
-            "simulation_type": simulation_type,
-        }
-
-        return SingleRhoSimulator(params)
+    def __init__(self) -> None:
+        self.simulator_type = "SingleRho"
 
     @settings(max_examples=10)
     @given(
@@ -313,7 +300,7 @@ class TestSingleRhoSimulator(TestBaseSimulator):
         wrong_experience,
         wrong_expected_experience,
     ):
-        simulator = TestSingleRhoSimulator.get_simulator(self)
+        simulator = TestSingleRhoSimulator.get_simulator(simulator_type = self.simulator_type)
 
         # Testing correct cases
         assert simulator.mismatch_calculator(experience, expected_experience) == (
