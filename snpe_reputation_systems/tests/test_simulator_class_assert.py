@@ -43,7 +43,7 @@ def get_simulator(
     if simulator_type == "Base":
         return BaseSimulator(params)
 
-    elif simulator_type == "Base":
+    elif simulator_type == "SingleRho":
         return SingleRhoSimulator(params)
 
 
