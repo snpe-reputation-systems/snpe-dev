@@ -173,7 +173,7 @@ class TestBaseSimulator:
         num_reviews_per_simulation array
         """
         n = draw(integers(min_value=1, max_value=50))
-        array = draw(arrays(int, n, elements=integers(min_value=0, max_value=50)))
+        array = draw(arrays(int, n, elements=integers(min_value=1, max_value=50)))
 
         n_2 = n
         attempts = 0
@@ -242,13 +242,15 @@ class TestBaseSimulator:
                 num_reviews_per_simulation=given_num_reviews_per_simulation,
             )
 
-        with pytest.raises(ValueError):  # Case 2: existing_reviesw != None
+        with pytest.raises(ValueError):  # Case 2: existing_reviews != None
             base_simulator.simulate(
                 num_simulations=given_num_simulations,
                 existing_reviews=self._gen_random_existing_reviews(
-                    given_num_simulations_2, depth_existing_reviews
+                    given_num_simulations_2,
+                    depth_existing_reviews,
                 ),
                 simulation_parameters={},
+                num_reviews_per_simulation=given_num_reviews_per_simulation,
             )
 
         # If simulation_parameters is not None:
