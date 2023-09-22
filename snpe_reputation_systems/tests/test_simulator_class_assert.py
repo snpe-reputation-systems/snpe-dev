@@ -69,9 +69,7 @@ class TestBaseSimulator:
 
         assert isinstance(self.get_simulator(), BaseSimulator)
 
-        assert isinstance(
-            self.get_simulator(review_prior=array_int5), BaseSimulator
-        )
+        assert isinstance(self.get_simulator(review_prior=array_int5), BaseSimulator)
 
         assert isinstance(
             self.get_simulator(simulation_type="histogram"),
