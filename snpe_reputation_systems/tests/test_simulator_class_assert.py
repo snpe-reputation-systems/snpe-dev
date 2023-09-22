@@ -78,19 +78,17 @@ class TestBaseSimulator:
         # Testing correct cases
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(simulator_type=self.simulator_type),
+            get_simulator(simulator_type=self.simulator_type),
             BaseSimulator,
         )
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(
-                simulator_type=self.simulator_type, review_prior=array_int5
-            ),
+            get_simulator(simulator_type=self.simulator_type, review_prior=array_int5),
             BaseSimulator,
         )
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(
+            get_simulator(
                 simulator_type=self.simulator_type, simulation_type="histogram"
             ),
             BaseSimulator,
@@ -102,16 +100,14 @@ class TestBaseSimulator:
             ValueError,
             match="Prior Dirichlet distribution of simulated reviews needs to have 5 parameters",
         ):
-            TestBaseSimulator.get_simulator(
-                simulator_type=self.simulator_type, review_prior=array_not5
-            )
+            get_simulator(simulator_type=self.simulator_type, review_prior=array_not5)
 
         # Testing incorrect values for "simulation type"
 
         with pytest.raises(
             ValueError, match="Can only simulate review histogram or timeseries"
         ):
-            TestBaseSimulator.get_simulator(
+            get_simulator(
                 simulator_type=self.simulator_type, simulation_type=random_string
             )
 
@@ -138,9 +134,7 @@ class TestBaseSimulator:
         assume(array_not5.shape != (5,))
 
         # Instantiate base simulator
-        simulator = TestBaseSimulator.get_simulator(
-            simulator_type=self.simulator_type
-        )
+        simulator = get_simulator(simulator_type=self.simulator_type)
 
         # Testing correct cases
         result = simulator.convolve_prior_with_existing_reviews(array_int5)
@@ -230,9 +224,7 @@ class TestBaseSimulator:
         ) = int_and_array
 
         # Instantiate base simulator
-        simulator = get_simulator(
-            simulator_type=self.simulator_type
-        )
+        simulator = get_simulator(simulator_type=self.simulator_type)
 
         # If existing_reviews is not None:
 
@@ -338,6 +330,5 @@ class TestSingleRhoSimulator(TestBaseSimulator):
         with pytest.raises(ValueError):
             simulator.mismatch_calculator(experience, wrong_expected_experience)
 
-
-    @given()
-    def test_simulate_review_histogram(self):
+    # @given()
+    # def test_simulate_review_histogram(self):
