@@ -435,5 +435,3 @@ class TestSingleRhoSimulator(TestBaseSimulator):
                 simulation_parameters={},
                 num_reviews_per_simulation=given_num_reviews_per_simulation,
             )
-
-        ## Pendiong: test the "new" posible successful cases
