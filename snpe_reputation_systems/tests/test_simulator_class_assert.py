@@ -174,51 +174,92 @@ class TestBaseSimulator:
         """
         n = draw(integers(min_value=1, max_value=50))
         array = draw(arrays(int, n, elements=integers(min_value=0, max_value=50)))
-        return n, array  # num_simulations, num_reviews_per_simulation
 
-    @settings(max_examples=10)
+        n_2 = n
+        attempts = 0
+        while n_2 == n and attempts < 100:
+            n_2 = draw(integers(min_value=1, max_value=50))
+            attempts += 1
+
+        assume(n_2 != n)
+        return (
+            n,
+            n_2,
+            array,
+        )  # num_simulations, num_simlations_2, num_reviews_per_simulation
+
+    @settings(max_examples=50)
     @given(
-        _integer_and_array()
+        _integer_and_array(),
+        depth_existing_reviews=st.integers(min_value=5, max_value=25),
     )  # IMPORTANT There are missing elements in given to be added as the test_simulate is completed
-    def test_simulate(self, int_and_array):
+    def test_simulate(self, int_and_array, depth_existing_reviews):
         """
         Testing "simulate" method according to the former "assert"cases provided for this
         BaseSimulator method in simulator_class.py
         """
 
-        given_num_simulations, given_num_reviews_per_simulation = int_and_array
+        (
+            given_num_simulations,
+            given_num_simulations_2,
+            given_num_reviews_per_simulation,
+        ) = int_and_array
 
         # Instantiate base simulator
         base_simulator = TestBaseSimulator.get_base_simulator()
 
-        # If existing_reviews exists:
+        # If existing_reviews is not None:
 
-        # Expect ValueError if simulation_parameters is None
+        ## Expect ValueError if simulation_parameters is None
         with pytest.raises(ValueError):
             base_simulator.simulate(
                 num_simulations=given_num_simulations,
                 existing_reviews=self._gen_random_existing_reviews(
-                    given_num_simulations, 10
+                    given_num_simulations, depth_existing_reviews
                 ),
             )
 
-        # Expect ValueError if num_reviews_per_simulation is None
+            ## Expect ValueError if num_reviews_per_simulation is None
         with pytest.raises(ValueError):
             base_simulator.simulate(
                 num_simulations=given_num_simulations,
                 existing_reviews=self._gen_random_existing_reviews(
-                    given_num_simulations, 10
+                    given_num_simulations, depth_existing_reviews
                 ),
                 simulation_parameters={},
             )
 
-        # If all three exist: code continues
+        # If all three (existing_reviews, num_reviews_per_simulation, simulation_parameters) exist:
+        # code continues
 
         # If num_reviews_per_simulation exists:
 
-        # Expect ValueError if len(num_reviews_per_simulation) != num_simulations
-        # base_simulator.simulate(num_simulations, num_reviews_per_simulation)
+        ## Expect ValueError if len(num_reviews_per_simulation) != num_simulations
+        with pytest.raises(ValueError):  # Case 1: existing_reviesw == None
+            base_simulator.simulate(
+                num_simulations=given_num_simulations_2,
+                simulation_parameters={},
+                num_reviews_per_simulation=given_num_reviews_per_simulation,
+            )
 
-        # If simulation_parameters exists:
+        with pytest.raises(ValueError):  # Case 2: existing_reviesw != None
+            base_simulator.simulate(
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations_2, depth_existing_reviews
+                ),
+                simulation_parameters={},
+            )
 
-        # Expect KeyError if set(simulation_parameters) != set(dummy_parameters)
+        # If simulation_parameters is not None:
+
+        ## Expect NotImplementedError if set(simulation_parameters) != set(dummy_parameters):
+        ## This is a result of the method "generate_simulation_parameters" not being implemented still for BaseSimulator
+        with pytest.raises(NotImplementedError):
+            base_simulator.simulate(
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations, depth_existing_reviews
+                ),
+                simulation_parameters={},
+            )
