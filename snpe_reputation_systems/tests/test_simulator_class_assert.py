@@ -330,5 +330,110 @@ class TestSingleRhoSimulator(TestBaseSimulator):
         with pytest.raises(ValueError):
             simulator.mismatch_calculator(experience, wrong_expected_experience)
 
-    # @given()
-    # def test_simulate_review_histogram(self):
+    @staticmethod
+    @composite
+    def _integer_and_array(draw):
+        """
+        Function for composite hypothesis strategy.
+
+        This is required as in the "simulate" method, num_reviews_per_simulation
+        is expected to have a length equal to num_simulations.
+
+        Accordingly, the function return the value for num_simulations and an appropriate
+        num_reviews_per_simulation array
+        """
+        n = draw(integers(min_value=1, max_value=50))
+        array = draw(arrays(int, n, elements=integers(min_value=1, max_value=50)))
+
+        n_2 = n
+        attempts = 0
+        while n_2 == n and attempts < 100:
+            n_2 = draw(integers(min_value=5, max_value=50))
+            attempts += 1
+
+        assume(n_2 != n)
+        return (
+            n,
+            n_2,
+            array,
+        )  # num_simulations, num_simlations_2, num_reviews_per_simulation
+
+    @settings(max_examples=50)
+    @given(
+        _integer_and_array(),
+        integers(min_value=5, max_value=25),
+    )
+    def test_simulate(self, int_and_array, depth_existing_reviews):
+        """
+        Testing "simulate" method according to the former "assert"cases provided for this
+        BaseSimulator method in simulator_class.py
+        """
+
+        (
+            given_num_simulations,
+            given_num_simulations_2,
+            given_num_reviews_per_simulation,
+        ) = int_and_array
+
+        # Instantiate base simulator
+        simulator = get_simulator(simulator_type=self.simulator_type)
+
+        # If existing_reviews is not None:
+
+        ## Expect ValueError if simulation_parameters is None
+        with pytest.raises(ValueError):
+            simulator.simulate(
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations, depth_existing_reviews
+                ),
+            )
+
+            ## Expect ValueError if num_reviews_per_simulation is None
+        with pytest.raises(ValueError):
+            simulator.simulate(
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations, depth_existing_reviews
+                ),
+                simulation_parameters={},
+            )
+
+        # If all three (existing_reviews, num_reviews_per_simulation, simulation_parameters) exist:
+        # code continues
+
+        # If num_reviews_per_simulation exists:
+
+        ## Expect ValueError if len(num_reviews_per_simulation) != num_simulations
+        with pytest.raises(ValueError):  # Case 1: existing_reviesw == None
+            simulator.simulate(
+                num_simulations=given_num_simulations_2,
+                simulation_parameters={},
+                num_reviews_per_simulation=given_num_reviews_per_simulation,
+            )
+
+        with pytest.raises(ValueError):  # Case 2: existing_reviews != None
+            simulator.simulate(
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations_2,
+                    depth_existing_reviews,
+                ),
+                simulation_parameters={},
+                num_reviews_per_simulation=given_num_reviews_per_simulation,
+            )
+
+        # If simulation_parameters is not None:
+
+        ## Expect NotImplementedError if set(simulation_parameters) != set(dummy_parameters):
+        with pytest.raises(KeyError):
+            simulator.simulate(
+                num_simulations=given_num_simulations,
+                existing_reviews=self._gen_random_existing_reviews(
+                    given_num_simulations, depth_existing_reviews
+                ),
+                simulation_parameters={},
+                num_reviews_per_simulation=given_num_reviews_per_simulation,
+            )
+
+        ## Pendiong: test the "new" posible successful cases
