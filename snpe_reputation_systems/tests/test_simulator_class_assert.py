@@ -22,7 +22,7 @@ from ..snpe_reputation_systems.simulations.simulator_class import (
 
 
 class TestBaseSimulator:
-    def get_base_simulator(
+    def get_simulator(
         review_prior=np.array([1, 1, 1, 1, 1]),
         tendency_to_rate=0.05,
         simulation_type="timeseries",
@@ -67,14 +67,14 @@ class TestBaseSimulator:
 
         # Testing correct cases
 
-        assert isinstance(TestBaseSimulator.get_base_simulator(), BaseSimulator)
+        assert isinstance(TestBaseSimulator.get_simulator(), BaseSimulator)
 
         assert isinstance(
-            TestBaseSimulator.get_base_simulator(review_prior=array_int5), BaseSimulator
+            TestBaseSimulator.get_simulator(review_prior=array_int5), BaseSimulator
         )
 
         assert isinstance(
-            TestBaseSimulator.get_base_simulator(simulation_type="histogram"),
+            TestBaseSimulator.get_simulator(simulation_type="histogram"),
             BaseSimulator,
         )
 
@@ -84,14 +84,14 @@ class TestBaseSimulator:
             ValueError,
             match="Prior Dirichlet distribution of simulated reviews needs to have 5 parameters",
         ):
-            TestBaseSimulator.get_base_simulator(review_prior=array_not5)
+            TestBaseSimulator.get_simulator(review_prior=array_not5)
 
         # Testing incorrect values for "simulation type"
 
         with pytest.raises(
             ValueError, match="Can only simulate review histogram or timeseries"
         ):
-            TestBaseSimulator.get_base_simulator(simulation_type=random_string)
+            TestBaseSimulator.get_simulator(simulation_type=random_string)
 
     @settings(max_examples=10)
     @given(
@@ -116,7 +116,7 @@ class TestBaseSimulator:
         assume(array_not5.shape != (5,))
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_base_simulator()
+        base_simulator = TestBaseSimulator.get_simulator()
 
         # Testing correct cases
         result = base_simulator.convolve_prior_with_existing_reviews(array_int5)
@@ -192,7 +192,7 @@ class TestBaseSimulator:
     @given(
         _integer_and_array(),
         integers(min_value=5, max_value=25),
-    )  # IMPORTANT There are missing elements in given to be added as the test_simulate is completed
+    )
     def test_simulate(self, int_and_array, depth_existing_reviews):
         """
         Testing "simulate" method according to the former "assert"cases provided for this
@@ -206,7 +206,7 @@ class TestBaseSimulator:
         ) = int_and_array
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_base_simulator()
+        base_simulator = TestBaseSimulator.get_simulator()
 
         # If existing_reviews is not None:
 
@@ -266,3 +266,66 @@ class TestBaseSimulator:
                 simulation_parameters={},
                 num_reviews_per_simulation=given_num_reviews_per_simulation,
             )
+
+
+# class TestSingleRhoSimulator
+#############################################
+
+
+class TestSingleRhoSimulator(TestBaseSimulator):
+    def get_simulator(
+        review_prior=np.array([1, 1, 1, 1, 1]),
+        tendency_to_rate=0.05,
+        simulation_type="timeseries",
+    ):
+        """
+        Returns a functional instance of BaseSimulator to use for the different
+        tests for its methods.
+
+        Although in most cases the default values set for `params` would work,
+        the option to manually modify these has been considered in case such
+        flexibility is necesary later in the testing design and implementation
+        process.
+        """
+
+        params = {
+            "review_prior": review_prior,
+            "tendency_to_rate": tendency_to_rate,
+            "simulation_type": simulation_type,
+        }
+
+        return SingleRhoSimulator(params)
+
+    @settings(max_examples=10)
+    @given(
+        integers(min_value=1, max_value=5),
+        floats(min_value=1, max_value=5),
+        integers(min_value=6, max_value=10),
+        floats(min_value=6, max_value=10),
+    )
+    def test_mismatch_calculator(
+        self,
+        experience,
+        expected_experience,
+        wrong_experience,
+        wrong_expected_experience,
+    ):
+        simulator = self.get_simulator()
+
+        # Testing correct cases
+        assert simulator.mismatch_calculator(experience, expected_experience) == (
+            experience - expected_experience
+        )
+
+        # Output type test
+        assert isinstance(
+            simulator.mismatch_calculator(experience, expected_experience), float
+        )
+
+        # out-of-range experience test
+        with pytest.raises(ValueError):
+            simulator.mismatch_calculator(wrong_experience, expected_experience)
+
+        # out-of-range expected experience test
+        with pytest.raises(ValueError):
+            simulator.mismatch_calculator(experience, wrong_expected_experience)
