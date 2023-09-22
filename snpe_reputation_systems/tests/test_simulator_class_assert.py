@@ -308,9 +308,7 @@ class TestSingleRhoSimulator(TestBaseSimulator):
         wrong_experience,
         wrong_expected_experience,
     ):
-        simulator = TestSingleRhoSimulator.get_simulator(
-            simulator_type=self.simulator_type
-        )
+        simulator = get_simulator(simulator_type=self.simulator_type)
 
         # Testing correct cases
         assert simulator.mismatch_calculator(experience, expected_experience) == (
