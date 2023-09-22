@@ -73,6 +73,8 @@ class BaseSimulator:
         existing_reviews: Optional[List[np.ndarray]] = None,
         **kwargs,
     ) -> None:
+        
+        ##############################################################################
         if existing_reviews is not None:
             if simulation_parameters is None:
                 raise ValueError(
@@ -85,6 +87,7 @@ class BaseSimulator:
                 )
             existing_reviews = check_existing_reviews(existing_reviews)
             num_simulations = len(existing_reviews)
+        ##############################################################################
 
         if num_reviews_per_simulation is not None:
             if len(num_reviews_per_simulation) != num_simulations:
