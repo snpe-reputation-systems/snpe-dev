@@ -67,14 +67,14 @@ class TestBaseSimulator:
 
         # Testing correct cases
 
-        assert isinstance(TestBaseSimulator.get_simulator(), BaseSimulator)
+        assert isinstance(self.get_simulator(), BaseSimulator)
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(review_prior=array_int5), BaseSimulator
+            self.get_simulator(review_prior=array_int5), BaseSimulator
         )
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(simulation_type="histogram"),
+            self.get_simulator(simulation_type="histogram"),
             BaseSimulator,
         )
 
@@ -84,14 +84,14 @@ class TestBaseSimulator:
             ValueError,
             match="Prior Dirichlet distribution of simulated reviews needs to have 5 parameters",
         ):
-            TestBaseSimulator.get_simulator(review_prior=array_not5)
+            self.get_simulator(review_prior=array_not5)
 
         # Testing incorrect values for "simulation type"
 
         with pytest.raises(
             ValueError, match="Can only simulate review histogram or timeseries"
         ):
-            TestBaseSimulator.get_simulator(simulation_type=random_string)
+            self.get_simulator(simulation_type=random_string)
 
     @settings(max_examples=10)
     @given(
@@ -116,7 +116,7 @@ class TestBaseSimulator:
         assume(array_not5.shape != (5,))
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator()
+        base_simulator = self.get_simulator()
 
         # Testing correct cases
         result = base_simulator.convolve_prior_with_existing_reviews(array_int5)
@@ -206,7 +206,7 @@ class TestBaseSimulator:
         ) = int_and_array
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator()
+        base_simulator = self.get_simulator()
 
         # If existing_reviews is not None:
 
