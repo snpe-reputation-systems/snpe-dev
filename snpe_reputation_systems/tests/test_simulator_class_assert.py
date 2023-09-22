@@ -68,14 +68,15 @@ class TestBaseSimulator:
 
         # Testing correct cases
 
-        assert isinstance(TestBaseSimulator.get_simulator(), BaseSimulator)
+        assert isinstance(TestBaseSimulator.get_simulator(self), BaseSimulator)
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(review_prior=array_int5), BaseSimulator
+            TestBaseSimulator.get_simulator(self, review_prior=array_int5),
+            BaseSimulator,
         )
 
         assert isinstance(
-            TestBaseSimulator.get_simulator(simulation_type="histogram"),
+            TestBaseSimulator.get_simulator(self, simulation_type="histogram"),
             BaseSimulator,
         )
 
@@ -85,14 +86,14 @@ class TestBaseSimulator:
             ValueError,
             match="Prior Dirichlet distribution of simulated reviews needs to have 5 parameters",
         ):
-            TestBaseSimulator.get_simulator(review_prior=array_not5)
+            TestBaseSimulator.get_simulator(self, review_prior=array_not5)
 
         # Testing incorrect values for "simulation type"
 
         with pytest.raises(
             ValueError, match="Can only simulate review histogram or timeseries"
         ):
-            TestBaseSimulator.get_simulator(simulation_type=random_string)
+            TestBaseSimulator.get_simulator(self, simulation_type=random_string)
 
     @settings(max_examples=10)
     @given(
@@ -117,7 +118,7 @@ class TestBaseSimulator:
         assume(array_not5.shape != (5,))
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator()
+        base_simulator = TestBaseSimulator.get_simulator(self)
 
         # Testing correct cases
         result = base_simulator.convolve_prior_with_existing_reviews(array_int5)
@@ -207,7 +208,7 @@ class TestBaseSimulator:
         ) = int_and_array
 
         # Instantiate base simulator
-        base_simulator = TestBaseSimulator.get_simulator()
+        base_simulator = TestBaseSimulator.get_simulator(self)
 
         # If existing_reviews is not None:
 
@@ -312,7 +313,7 @@ class TestSingleRhoSimulator(TestBaseSimulator):
         wrong_experience,
         wrong_expected_experience,
     ):
-        simulator = TestSingleRhoSimulator.get_simulator()
+        simulator = TestSingleRhoSimulator.get_simulator(self)
 
         # Testing correct cases
         assert simulator.mismatch_calculator(experience, expected_experience) == (
