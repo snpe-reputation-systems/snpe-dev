@@ -158,7 +158,7 @@ class TestBaseSimulator:
                     [1 if k == add_index else 0 for k in range(5)]
                 )
 
-        return existing_reviews
+        return list(existing_reviews)
 
     @staticmethod
     @composite
