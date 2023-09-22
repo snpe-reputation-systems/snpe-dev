@@ -178,7 +178,7 @@ class TestBaseSimulator:
         n_2 = n
         attempts = 0
         while n_2 == n and attempts < 100:
-            n_2 = draw(integers(min_value=1, max_value=50))
+            n_2 = draw(integers(min_value=5, max_value=50))
             attempts += 1
 
         assume(n_2 != n)
@@ -264,4 +264,5 @@ class TestBaseSimulator:
                     given_num_simulations, depth_existing_reviews
                 ),
                 simulation_parameters={},
+                num_reviews_per_simulation=given_num_reviews_per_simulation,
             )
