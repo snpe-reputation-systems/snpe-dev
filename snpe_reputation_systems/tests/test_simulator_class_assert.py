@@ -191,7 +191,7 @@ class TestBaseSimulator:
     @settings(max_examples=50)
     @given(
         _integer_and_array(),
-        integers(min_value=5, max_value=25),
+        depth_existing_reviews=st.integers(min_value=5, max_value=25),
     )  # IMPORTANT There are missing elements in given to be added as the test_simulate is completed
     def test_simulate(self, int_and_array, depth_existing_reviews):
         """
